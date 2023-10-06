@@ -38,9 +38,10 @@ initializeDatabaseAndServer();
 
 //Authentication Middle wear
 
-const authenticationToken = (request, response, nest) => {
+const authenticationToken = (request, response, next) => {
   let jsonWebToken;
-  const authHeader = request.headers["Authorization"];
+  const authHeader = request.headers["authorization"];
+
   if (authHeader !== undefined) {
     jsonWebToken = authHeader.split(" ")[1];
   }
@@ -124,5 +125,32 @@ app.post("/login/", async (request, response) => {
     }
   }
 });
+
+const outPutResult = (dbObject) => {
+  return {
+    username: dbObject.username,
+    tweet: dbObject.tweet,
+    dateTime: dbObject.date_time,
+  };
+};
+
+// API 3 Returns the latest tweets of people whom the user follows. Return 4 tweets at a time
+app.get(
+  "/user/tweets/feed/",
+  authenticationToken,
+  async (request, response) => {
+    const { userId } = request.params;
+    const getTweetsQuery = `SELECT  user.username,
+    tweet.tweet ,tweet.date_time AS dateTime
+    FROM follower INNER JOIN tweet ON follower.following_user_id=tweet.user_id INNER JOIN user ON user
+    WHERE follower.follower_user_id=${userId}
+    ORDER BY
+    date_time DESC
+    LIMIT 4;`;
+
+    const responseResult = await db.all(getTweetsQuery);
+    response.send(responseResult.map((each) => outPutResult(each)));
+  }
+);
 
 module.exports = app;
