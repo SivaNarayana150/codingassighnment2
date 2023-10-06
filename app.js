@@ -140,8 +140,8 @@ app.get(
   authenticationToken,
   async (request, response) => {
     const { userId } = request.params;
-    const getTweetsQuery = `SELECT  user.username,
-    tweet.tweet ,tweet.date_time AS dateTime
+    const getTweetsQuery = `SELECT  user.username AS username,
+    tweet.tweet AS tweet ,tweet.date_time AS dateTime
     FROM follower INNER JOIN tweet ON follower.following_user_id=tweet.user_id INNER JOIN user ON user
     WHERE follower.follower_user_id=${userId}
     ORDER BY
@@ -152,5 +152,26 @@ app.get(
     response.send(responseResult.map((each) => outPutResult(each)));
   }
 );
+
+//API 4
+app.get("/user/following/", authenticationToken, async (request, response) => {
+  const { userId } = request.params;
+  const obtainQuery = `SELECT DISTINCT name from follower INNER JOIN user ON user.user_id = follower.follower_user_id 
+  WHERE follower_user_id='${userId}' ;`;
+  const getResult = await db.all(obtainQuery);
+  response.send(getResult);
+});
+
+//API 5
+
+app.get("/user/followers/", authenticationToken, async (request, response) => {
+  const { userId } = request.params;
+  const obtainQuery = `SELECT DISTINCT name from follower INNER JOIN user ON user.user_id = follower.follower_user_id 
+  WHERE following_user_id='${userId}' ;`;
+  const getResult = await db.all(obtainQuery);
+  response.send(getResult);
+});
+
+//API 6
 
 module.exports = app;
