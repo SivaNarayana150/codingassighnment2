@@ -54,3 +54,18 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2G
 
 GET http://localhost:3001/tweets/4/replies/
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+### 
+
+
+GET http://localhost:3001/user/tweets/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+###
+POST http://localhost:3001/user/tweets/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+###
+
+DELETE http://localhost:3001/tweets/4/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4

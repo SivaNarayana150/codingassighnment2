@@ -279,4 +279,62 @@ app.get(
   }
 );
 
+app.get("/user/tweets/", Authentication, async (request, response) => {
+  const { username } = request;
+
+  const FetchUser_id = `SELECT user_id FROM user WHERE username='${username}';`;
+  const user_id = await db.get(FetchUser_id);
+  let userId = user_id.user_id;
+
+  const getTweetDetailsQuery = `SELECT 
+  tweet.tweet as tweet ,
+  COUNT(DISTINCT(like.like_id)) AS likes,
+  COUNT(DISTINCT(reply.reply_id)) AS replies,
+  tweet.date_time AS dateTime FROM user INNER JOIN tweet ON user.user_id = tweet.user_id INNER JOIN like ON like.tweet_id =tweet.tweet_id INNER JOIN reply ON reply.tweet_id = tweet.tweet_id
+  WHERE user.user_id=${userId}  
+  GROUP BY 
+  tweet.tweet_id ;`;
+  const tweetsDetails = await db.all(getTweetDetailsQuery);
+  response.send(tweetsDetails);
+});
+
+app.post("/user/tweets/", Authentication, async (request, response) => {
+  const { username } = request;
+
+  const FetchUser_id = `SELECT user_id FROM user WHERE username='${username}';`;
+  const user_id = await db.get(FetchUser_id);
+  let userId = user_id.user_id;
+
+  const { tweet } = request;
+  const { tweetId } = request;
+  const postTweetQuery = `INSERT INTO tweet(tweet,user_id)
+  VALUES(
+      '${tweet}',
+      '${userId}'
+  ) ;`;
+  await db.run(postTweetQuery);
+  response.send("Created a Tweet");
+});
+
+app.delete("/tweets/:tweetId/", Authentication, async (request, response) => {
+  const { tweetId } = request;
+  const { tweet } = request;
+  const { username } = request;
+
+  const FetchUser_id = `SELECT user_id FROM user WHERE username='${username}';`;
+  const user_id = await db.get(FetchUser_id);
+  let userId = user_id.user_id;
+
+  const selectUserQuery = `SELECT * FROM tweet WHERE tweet.user_id =${userId} AND tweet.tweet_id =${tweetId};`;
+  const tweetUser = await db.all(selectUserQuery);
+
+  if (tweetUser.length !== 0) {
+    const deleteTweetQuery = `DELETE FROM tweet WHERE tweet.user_id=${userId} AND tweet.tweet_id=${tweetId};`;
+    await db.run(deleteTweetQuery);
+    response.send("Tweet Removed");
+  } else {
+    response.status(401);
+    response.send("Invalid Request");
+  }
+});
 module.exports = app;
