@@ -25,3 +25,21 @@ Content-Type: application/json
 
 GET http://localhost:3001/user/tweets/feed/
 Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+
+###
+
+GET http://localhost:3001/user/following/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+###
+
+GET http://localhost:3001/user/followers/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
+
+
+###
+
+
+GET http://localhost:3001/tweets/4/
+Authorization: Bearer eyJhbGciOiJIUzI1NiJ9.Sm9lQmlkZW4.euehz5FJ-vL0bfRp0vtsJRQ2GWuBTusnBFlBhU5coc4
