@@ -134,6 +134,13 @@ app.get("/user/tweets/feed/", Authentication, async (request, response) => {
   const { username } = request;
   const FetchUser_id = `SELECT user_id FROM user WHERE username='${username}';`;
   const user_id = await db.get(FetchUser_id);
+  let userId = user_id.user_id;
+
+  const tweetsOfPeopleQuery = `SELECT username,tweet,date_time As dateTime FROM
+  user INNER JOIN  follower ON user.user_id = follower.follower_id INNER JOIN  tweet ON follower.follower_id=tweet.user_id WHERE follower.follower_user_id=${userId} ORDER BY tweet.date_time DESC LIMIT 4;`;
+
+  const responseResult = await db.all(tweetsOfPeopleQuery);
+  response.send(responseResult);
 });
 
 module.exports = app;
