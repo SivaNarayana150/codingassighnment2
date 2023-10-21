@@ -136,8 +136,20 @@ app.get("/user/tweets/feed/", Authentication, async (request, response) => {
   const user_id = await db.get(FetchUser_id);
   let userId = user_id.user_id;
 
-  const tweetsOfPeopleQuery = `SELECT username,tweet,date_time As dateTime FROM
-  user INNER JOIN  follower ON user.user_id = follower.follower_id INNER JOIN  tweet ON following_user_id=tweet.user_id WHERE follower.following_user_id=${userId} ORDER BY tweet.date_time DESC  LIMIT 4;`;
+  const tweetsOfPeopleQuery = `
+SELECT
+user.username, tweet.tweet, tweet.date_time AS dateTime
+FROM
+follower
+INNER JOIN tweet
+ON follower.following_user_id = tweet.user_id
+INNER JOIN user
+ON tweet.user_id = user.user_id
+WHERE
+follower.follower_user_id = ${userId}
+ORDER BY
+tweet.date_time DESC
+LIMIT 4;`;
 
   const responseResult = await db.all(tweetsOfPeopleQuery);
   response.send(responseResult);
@@ -150,8 +162,22 @@ app.get("/user/following/", Authentication, async (request, response) => {
   const user_id = await db.get(FetchUser_id);
   let userId = user_id.user_id;
 
-  const tweetsOfPeopleQuery = `SELECT username FROM
-  user INNER JOIN  follower ON user.user_id = follower.follower_id  WHERE follower.following_user_id=${userId} ;`;
+  const tweetsOfPeopleQuery = `SELECT DISTINCT Users.name
+FROM Users
+WHERE Users.user_id IN (
+    SELECT DISTINCT t.user_id
+    FROM Tweet t
+    WHERE t.user_id <> ${userId} 
+    AND t.tweet_id IN (
+        SELECT DISTINCT r.tweet_id
+        FROM Reply r
+        WHERE r.user_id =  ${userId} 
+        UNION
+        SELECT DISTINCT l.tweet_id
+        FROM Like l
+        WHERE l.user_id =  ${userId} 
+    )
+);`;
 
   const responseResult = await db.all(tweetsOfPeopleQuery);
   response.send(responseResult);
